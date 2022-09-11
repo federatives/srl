@@ -1,5 +1,10 @@
 # srl
-simple roblox launcher for linux kernel users
+simple roblox launcher for primarily linux users
 
-# disclaimer
-we are currently writing the code and plan to release once we squash all the bugs
+## deps
++ `curl`
++ `gnu tar`
++ `xdg-mime`
++ `wine`
+
+# docs coming soon

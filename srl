@@ -1,0 +1,75 @@
+#!/bin/sh
+#	srl - simple roblox launcher for *nix systems 
+#    Copyright (C) 2022 GlitchPhoenix98
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# thanks to dietnusse for teaching me shell 
+_version=0.0.1
+_dxvk=1.10.3
+_client_url="https://www.roblox.com/download/client"
+rodir="$WINEPREFIX/drive_c/Program Files (x86)/Roblox/Versions"
+version() {
+    printf "srl v${_version}\n"
+}
+
+usage() {
+    printf 'Usage: srl [OPTION]...\n'
+    printf 'Roblox + Wine setup utility.\n'
+    printf '\n'
+    printf '  -i, --install  Install Roblox.\n'
+    printf '  -v, --version  Displays version.\n'
+    printf '  -h, --help     Show usage.\n'
+    printf '\n'
+}
+# To tell user if error as occurred.
+die() {
+    printf "ERROR: ${@}\n"
+    exit 1
+}
+
+install() {
+	[ "$UID" -eq 0 ] && die 'Cannot install Roblox as root!'
+	[ ! -x /usr/bin/wine ] && die 'Wine binary not found or not executable'
+		printf "\e[1;37mDownloading Roblox ...\e[0m\n"
+		curl -L ${_client_url} -o /tmp/client || die 'curl failed'
+	printf "\e[1;37mDownloading DXVK ...\e[0m\n"
+		curl -L https://github.com/doitsujin/dxvk/releases/download/v${_dxvk}/dxvk-${_dxvk}.tar.gz -o /tmp/srl-dxvk.tar.gz || die 'curl failed'
+		tar -xvf /tmp/srl-dxvk.tar.gz -C /tmp/ || die 'tar failed'
+	printf "\e[1;37mInstalling DXVK ...\e[0m\n"
+sh /tmp/dxvk-${_dxvk}/setup_dxvk.sh install || die 'setup_dxvk.sh failed'
+	printf "\e[1;37mInstalling Roblox ...\e[0m\n"
+	#create wine prefix
+	cd /tmp/
+	wine /tmp/client &> /dev/null && echo
+	#remove desktop and lnk files from home folder
+	rm /home/$USER/Roblox\ Player*
+	rm /home/$USER/Roblox\ Studio*
+}
+
+play() {
+	printf 'This is meant for the browser to launch, please do not launch it manually.\n'
+	cd $WINEPREFIX
+	wine [ -f "$robloxverdir"/version-*/RobloxPlayerLauncher.exe ]
+}
+case "$1" in
+    -i) install;;
+    -v) version;;
+    -h) usage;;
+    --install) install;;
+    --version) version;;
+    --help) usage;;
+    -p) play;;
+    *) usage; exit 1;;
+esac
