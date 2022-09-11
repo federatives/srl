@@ -19,49 +19,47 @@
 _version=0.0.1
 _dxvk=1.10.3
 _client_url="https://www.roblox.com/download/client"
-rodir="$WINEPREFIX/drive_c/Program Files (x86)/Roblox/Versions"
+_rodir="$WINEPREFIX/drive_c/Program Files (x86)/Roblox/Versions"
+
 version() {
     printf "srl v${_version}\n"
 }
 
 usage() {
     printf 'Usage: srl [OPTION]...\n'
-    printf 'Roblox + Wine setup utility.\n'
-    printf '\n'
+    printf 'Roblox + Wine setup utility.\n\n'
     printf '  -i, --install  Install Roblox.\n'
     printf '  -v, --version  Displays version.\n'
-    printf '  -h, --help     Show usage.\n'
-    printf '\n'
+    printf '  -h, --help     Show usage.\n\n'
 }
 # To tell user if error as occurred.
 die() {
-    printf "ERROR: ${@}\n"
+    printf "\e[1;37mERROR: \e[0m${@}\n"
     exit 1
 }
 
 install() {
 	[ "$UID" -eq 0 ] && die 'Cannot install Roblox as root!'
 	[ ! -x /usr/bin/wine ] && die 'Wine binary not found or not executable'
+	[ ! -x /usr/bin/curl ] && die 'Curl binary not found or not executable'
+	[ ! -x /usr/bin/tar ] && die 'Tar binary not found or not executable'
 		printf "\e[1;37mDownloading Roblox ...\e[0m\n"
 		curl -L ${_client_url} -o /tmp/client || die 'curl failed'
 	printf "\e[1;37mDownloading DXVK ...\e[0m\n"
 		curl -L https://github.com/doitsujin/dxvk/releases/download/v${_dxvk}/dxvk-${_dxvk}.tar.gz -o /tmp/srl-dxvk.tar.gz || die 'curl failed'
 		tar -xvf /tmp/srl-dxvk.tar.gz -C /tmp/ || die 'tar failed'
 	printf "\e[1;37mInstalling DXVK ...\e[0m\n"
-sh /tmp/dxvk-${_dxvk}/setup_dxvk.sh install || die 'setup_dxvk.sh failed'
+		sh /tmp/dxvk-${_dxvk}/setup_dxvk.sh install || die 'setup_dxvk.sh failed'
 	printf "\e[1;37mInstalling Roblox ...\e[0m\n"
-	#create wine prefix
-	cd /tmp/
-	wine /tmp/client &> /dev/null && echo
-	#remove desktop and lnk files from home folder
-	rm /home/$USER/Roblox\ Player*
-	rm /home/$USER/Roblox\ Studio*
+		wine /tmp/client &> /dev/null
+		# Remove desktop and lnk files from home folder
+		rm -v ${HOME}/Desktop/{'Roblox Player.desktop','Roblox Player.lnk','Roblox Studio.desktop','Roblox Studio.lnk'}
+	printf "\e[1;37mInstallation completed.\e[0m\n"
 }
 
-play() {
-	printf 'This is meant for the browser to launch, please do not launch it manually.\n'
+rblxplay() {
 	cd $WINEPREFIX
-	wine [ -f "$robloxverdir"/version-*/RobloxPlayerLauncher.exe ]
+	wine [ -f "$_rodir"/version-*/RobloxPlayerLauncher.exe ]
 }
 case "$1" in
     -i) install;;
@@ -70,6 +68,6 @@ case "$1" in
     --install) install;;
     --version) version;;
     --help) usage;;
-    -p) play;;
+    --rblxplay) rblxplay;;
     *) usage; exit 1;;
 esac
