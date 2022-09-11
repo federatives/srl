@@ -11,8 +11,10 @@ uninstall:
 
 install:
 	cp -f srl $(BINDIR)/srl
+
+browsinstall:
 	mkdir -p $(APPDIR)
 	cp -f srl.desktop $(APPDIR)/
 	xdg-mime default srl.desktop x-scheme-handler/roblox-player
 
-.PHONY: install uninstall
+.PHONY: browsinstall uninstall install
