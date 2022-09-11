@@ -61,7 +61,7 @@ sh /tmp/dxvk-${_dxvk}/setup_dxvk.sh install || die 'setup_dxvk.sh failed'
 play() {
 	printf 'This is meant for the browser to launch, please do not launch it manually.\n'
 	cd $WINEPREFIX
-	wine [ -f "$robloxverdir"/version-*/RobloxPlayerLauncher.exe ]
+	wine [ -f "$rodir"/version-*/RobloxPlayerLauncher.exe ]
 }
 case "$1" in
     -i) install;;
