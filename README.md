@@ -8,7 +8,7 @@ simple roblox launcher for primarily linux users
 + `wine`
 
 ## Installation
-`# make install`
-`$ make browsinstall`
++ `# make install`
++ `$ make browsinstall`
 
 # docs coming soon
