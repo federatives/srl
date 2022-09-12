@@ -19,6 +19,7 @@
 _version=0.0.1
 _dxvk=1.10.3
 _client_url="https://www.roblox.com/download/client"
+export WINEPREFIX="$HOME/.local/share/srl"
 _rodir="$WINEPREFIX/drive_c/Program Files (x86)/Roblox/Versions"
 
 version() {
@@ -31,18 +32,23 @@ usage() {
     printf '  -i, --install  Install Roblox.\n'
     printf '  -v, --version  Displays version.\n'
     printf '  -h, --help     Show usage.\n\n'
+    printf '  -w, --wine     Create wine prefix\n'
 }
 # To tell user if error as occurred.
 die() {
     printf "\e[1;37mERROR: \e[0m${@}\n"
     exit 1
 }
-
+createwineprefix() {
+	printf "Creating wineprefix for srl\n"
+	WINEPREFIX=$HOME/.local/share/srl wineboot -u &> /dev/null || die 'Failed to create wineprefix. Missing dependancies?'
+}
 install() {
 	[ "$UID" -eq 0 ] && die 'Cannot install Roblox as root!'
 	[ ! -x /usr/bin/wine ] && die 'Wine binary not found or not executable'
 	[ ! -x /usr/bin/curl ] && die 'Curl binary not found or not executable'
 	[ ! -x /usr/bin/tar ] && die 'Tar binary not found or not executable'
+	[ ! -d "$HOME/.local/share/srl" ] && die 'Create the wine prefix first'
 		printf "\e[1;37mDownloading Roblox ...\e[0m\n"
 		curl -L ${_client_url} -o /tmp/client || die 'curl failed'
 	printf "\e[1;37mDownloading DXVK ...\e[0m\n"
@@ -53,22 +59,24 @@ install() {
 	printf "\e[1;37mInstalling Roblox ...\e[0m\n"
 		wine /tmp/client &> /dev/null
 		# Remove desktop and lnk files from home folder
-		rm -v ${HOME}/Desktop/{'Roblox Player.desktop','Roblox Player.lnk','Roblox Studio.desktop','Roblox Studio.lnk'}
+		rm -v ${HOME}/{'Roblox Player.desktop','Roblox Player.lnk','Roblox Studio.desktop','Roblox Studio.lnk'}
 	printf "\e[1;37mInstallation completed.\e[0m\n"
 }
 
 rblxplay() {
+	WINEPREFIX="$HOME/.local/share/srl"
 	printf "THIS IS FOR THE BROWSER, RUNNING THIS MANUALLY WILL NOT WORK\n"
-	cd $WINEPREFIX
-	wine [ -f "$_rodir"/version-*/RobloxPlayerLauncher.exe ]
+	cd "$_rodir"/version-*/ && wine RobloxPlayerLauncher.exe 
 }
 case "$1" in
     -i) install;;
     -v) version;;
     -h) usage;;
+    -w) createwineprefix;;
     --install) install;;
     --version) version;;
     --help) usage;;
+    --wine) createwineprefix;;
     --rblxplay) rblxplay;;
     *) usage; exit 1;;
 esac

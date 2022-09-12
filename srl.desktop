@@ -2,4 +2,6 @@
 Type=Application
 Name=Roblox App
 Exec=srl --rblxplay %u
+MimeType=x-scheme-handler/roblox-player;
 Categories=Game;
+StartupWMClass=RobloxPlayer.exe
