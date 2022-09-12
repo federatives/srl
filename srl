@@ -58,6 +58,7 @@ install() {
 }
 
 rblxplay() {
+	printf "THIS IS FOR THE BROWSER, RUNNING THIS MANUALLY WILL NOT WORK\n"
 	cd $WINEPREFIX
 	wine [ -f "$_rodir"/version-*/RobloxPlayerLauncher.exe ]
 }
