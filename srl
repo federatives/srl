@@ -44,7 +44,7 @@ createwineprefix() {
 	WINEPREFIX=$HOME/.local/share/srl wineboot -u &> /dev/null || die 'Failed to create wineprefix. Missing dependancies?'
 }
 install() {
-	[ "$UID" -eq 0 ] && die 'Cannot install Roblox as root!'
+	[ "$(id -u)" -eq 0 ] && die 'Cannot install Roblox as root!'
 	[ ! -x /usr/bin/wine ] && die 'Wine binary not found or not executable'
 	[ ! -x /usr/bin/curl ] && die 'Curl binary not found or not executable'
 	[ ! -x /usr/bin/tar ] && die 'Tar binary not found or not executable'
